@@ -11,7 +11,7 @@ env:
   C8Y_PASSWORD: ${{ secrets.C8Y_PASSWORD }}
 steps:
   - uses: actions/checkout@v3
-  - uses: reubenmiller/setup-go-c8y-cli@latest
+  - uses: reubenmiller/setup-go-c8y-cli@main
   - run: |
       c8y microservice create --file myfile.zip
 ```
@@ -25,7 +25,7 @@ env:
   C8Y_PASSWORD: ${{ secrets.C8Y_PASSWORD }}
 steps:
   - uses: actions/checkout@v3
-  - uses: reubenmiller/setup-go-c8y-cli@latest
+  - uses: reubenmiller/setup-go-c8y-cli@main
     with:
       version: '2.36.0'
       showVersion: false
