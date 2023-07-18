@@ -158,6 +158,7 @@ const exec = __importStar(__nccwpck_require__(1514));
 const config_1 = __nccwpck_require__(88);
 const tool_1 = __nccwpck_require__(8059);
 const chmodr_1 = __importDefault(__nccwpck_require__(8979));
+const path_1 = __importDefault(__nccwpck_require__(1017));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -172,7 +173,7 @@ function run() {
             core.info(`adding to path: ${tool}`);
             core.addPath(tool);
             if (config.showVersion) {
-                yield exec.exec(tool, ['version'], {});
+                yield exec.exec(path_1.default.join(tool, 'c8y'), ['version'], {});
             }
             if (config.command) {
                 core.info(`running command: ${config.command}`);
