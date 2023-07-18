@@ -159,12 +159,16 @@ const config_1 = __nccwpck_require__(88);
 const tool_1 = __nccwpck_require__(8059);
 const chmodr_1 = __importDefault(__nccwpck_require__(8979));
 const path_1 = __importDefault(__nccwpck_require__(1017));
+const fs_1 = __nccwpck_require__(7147);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const config = (0, config_1.getConfig)();
             const tool = yield (0, tool_1.getTool)(config);
             const binary = path_1.default.join(tool, 'c8y');
+            if (!(0, fs_1.existsSync)(binary)) {
+                core.error(`Binary does not exist. binary=${binary}`);
+            }
             core.info(`making binary executable: ${binary}`);
             (0, chmodr_1.default)(binary, 0o0755, err => {
                 if (err) {
@@ -243,6 +247,7 @@ const os_1 = __nccwpck_require__(2037);
 const fs_1 = __nccwpck_require__(7147);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 __nccwpck_require__(2137);
+const C8Y = 'c8y';
 function getLatestVersion(url) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -285,14 +290,14 @@ const getDownloadUri = (version) => {
     else {
         // TODO: Handle unsupported platforms
     }
-    const binaryName = ['c8y', platformName, archName].join('_');
+    const binaryName = [C8Y, platformName, archName].join('_');
     return `https://github.com/reubenmiller/go-c8y-cli/releases/download/${version}/${binaryName}`;
 };
 function getTool(config = {}) {
     return __awaiter(this, void 0, void 0, function* () {
         process.env.RUNNER_TOOL_CACHE = process.env.RUNNER_TOOL_CACHE || (0, os_1.tmpdir)();
         process.env.RUNNER_TEMP = process.env.RUNNER_TEMP || (0, os_1.tmpdir)();
-        const binaryName = 'c8y';
+        const binaryName = C8Y;
         if (!config.version) {
             config.version = 'latest';
         }
@@ -312,9 +317,10 @@ function getTool(config = {}) {
             return p;
         };
         const cachedPath = tc.find(binaryName, config.version);
-        if (cachedPath) {
+        if (cachedPath && (0, fs_1.existsSync)(path_1.default.join(cachedPath, C8Y))) {
             return outPath(cachedPath);
         }
+        core.info(`downloading tool from uri: ${config.uri}`);
         const download = yield tc.downloadTool(config.uri);
         const extractedPath = yield (0, extract_1.extract)(config.uri, download);
         core.info(extractedPath);

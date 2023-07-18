@@ -4,6 +4,7 @@ import {getConfig} from './config'
 import {getTool} from './tool'
 import chmodr from 'chmodr'
 import path from 'path'
+import { existsSync } from 'fs'
 
 
 async function run(): Promise<void> {
@@ -11,6 +12,10 @@ async function run(): Promise<void> {
     const config = getConfig()
     const tool = await getTool(config)
     const binary = path.join(tool, 'c8y')
+
+    if (!existsSync(binary)) {
+      core.error(`Binary does not exist. binary=${binary}`)
+    }
 
     core.info(`making binary executable: ${binary}`)
     chmodr(binary, 0o0755, err => {

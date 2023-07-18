@@ -3,9 +3,11 @@ import * as tc from '@actions/tool-cache'
 import { Config } from './config'
 import { extract } from './extract'
 import { tmpdir } from 'os'
-import { lstatSync } from 'fs'
+import { lstatSync, existsSync } from 'fs'
 import path from 'path'
 import 'cross-fetch/polyfill'
+
+const C8Y = 'c8y'
 
 
 async function getLatestVersion(url: string): Promise<string> {
@@ -45,7 +47,7 @@ const getDownloadUri = (version: string) => {
     // TODO: Handle unsupported platforms
   }
 
-  const binaryName = ['c8y', platformName, archName].join('_')
+  const binaryName = [C8Y, platformName, archName].join('_')
   return `https://github.com/reubenmiller/go-c8y-cli/releases/download/${version}/${binaryName}`
 };
 
@@ -54,7 +56,7 @@ export async function getTool(config: Config = {}): Promise<string> {
   process.env.RUNNER_TOOL_CACHE = process.env.RUNNER_TOOL_CACHE || tmpdir()
   process.env.RUNNER_TEMP = process.env.RUNNER_TEMP || tmpdir()
 
-  const binaryName = 'c8y'
+  const binaryName = C8Y
   if (!config.version) {
     config.version = 'latest'
   }
@@ -78,10 +80,11 @@ export async function getTool(config: Config = {}): Promise<string> {
   }
 
   const cachedPath = tc.find(binaryName, config.version)
-  if (cachedPath) {
+  if (cachedPath && existsSync(path.join(cachedPath, C8Y))) {
     return outPath(cachedPath)
   }
 
+  core.info(`downloading tool from uri: ${config.uri}`)
   const download = await tc.downloadTool(config.uri)
   const extractedPath = await extract(config.uri, download)
   core.info(extractedPath)
