@@ -28,7 +28,7 @@ async function run(): Promise<void> {
 
     if (config.showVersion) {
       core.info(`Showing version: binary=${binary}`)
-      await exec.exec(binary, ['version'], {})
+      await exec.exec(`"${binary}"`, ['version'], {})
     }
 
     if (config.command) {

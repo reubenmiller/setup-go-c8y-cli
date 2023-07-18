@@ -179,7 +179,7 @@ function run() {
             core.addPath(tool);
             if (config.showVersion) {
                 core.info(`Showing version: binary=${binary}`);
-                yield exec.exec(binary, ['version'], {});
+                yield exec.exec(`"${binary}"`, ['version'], {});
             }
             if (config.command) {
                 core.info(`running command: ${config.command}`);
