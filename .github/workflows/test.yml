@@ -1,5 +1,6 @@
 name: 'build-test'
 on: # rebuild any PRs and main branch changes
+  workflow_dispatch:
   pull_request:
   push:
     branches:
@@ -20,5 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./
-        with:
-          milliseconds: 1000
+      - run: |
+          which c8y
+          c8y version

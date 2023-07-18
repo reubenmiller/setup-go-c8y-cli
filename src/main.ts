@@ -1,16 +1,33 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import * as exec from '@actions/exec'
+import {getConfig} from './config'
+import {getTool} from './tool'
+import chmodr from 'chmodr'
+
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    const config = getConfig()
+    const tool = await getTool(config)
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    core.info(`making binary executable: ${tool}`)
+    chmodr(tool, 0o0755, err => {
+      if (err) {
+        throw err
+      }
+    })
+    core.info(`adding to path: ${tool}`)
+    core.addPath(tool)
 
-    core.setOutput('time', new Date().toTimeString())
+    if (config.showVersion) {
+      await exec.exec(tool, ['version'], {})
+    }
+
+    if (config.command) {
+      core.info(`running command: ${config.command}`)
+      await exec.exec(config.command, [], {})
+    }
+    // core.setOutput('time', new Date().toTimeString())
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

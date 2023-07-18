@@ -1,29 +1,46 @@
-import {wait} from '../src/wait'
+import {Config} from '../src/config'
+import {getTool} from '../src/tool'
 import * as process from 'process'
 import * as cp from 'child_process'
 import * as path from 'path'
 import {expect, test} from '@jest/globals'
 
-test('throws invalid number', async () => {
-  const input = parseInt('foo', 10)
-  await expect(wait(input)).rejects.toThrow('milliseconds not a number')
-})
 
-test('wait 500 ms', async () => {
-  const start = new Date()
-  await wait(500)
-  const end = new Date()
-  var delta = Math.abs(end.getTime() - start.getTime())
-  expect(delta).toBeGreaterThan(450)
-})
+test('downloads and extracts tool with latest version', async () => {
+  const path = await getTool()
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  process.env['INPUT_MILLISECONDS'] = '500'
-  const np = process.execPath
-  const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecFileSyncOptions = {
-    env: process.env
+  let expectedSuffix = /c8y\/\d+\.\d+\.\d+\/arm64$/
+  if (process.arch == 'x64') {
+    expectedSuffix = /c8y\/\d+\.\d+\.\d+\/amd64$/
   }
-  console.log(cp.execFileSync(np, [ip], options).toString())
+  expect(expectedSuffix.test(path)).toBeTruthy()
+})
+
+test('downloads and extracts tool with explicit version', async () => {
+  const config: Config = {
+    version: '2.35.0',
+  }
+
+  const path = await getTool(config)
+
+  let expectedSuffix = '/c8y/2.35.0/arm64'
+  if (process.arch == 'x64') {
+    expectedSuffix = '/c8y/2.35.0/amd64'
+  }
+  expect(path.endsWith(expectedSuffix)).toBeTruthy()
+})
+
+test('downloads and extracts tool and executes a command', async () => {
+  const config: Config = {
+    version: '2.35.0',
+    command: 'c8y version'
+  }
+
+  const path = await getTool(config)
+
+  let expectedSuffix = '/c8y/2.35.0/arm64'
+  if (process.arch == 'x64') {
+    expectedSuffix = '/c8y/2.35.0/amd64'
+  }
+  expect(path.endsWith(expectedSuffix)).toBeTruthy()
 })
