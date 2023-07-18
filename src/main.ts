@@ -28,11 +28,11 @@ async function run(): Promise<void> {
 
     if (config.showVersion) {
       core.info(`showing version: binary=${binary}`)
-      await exec.exec(`"${binary}"`, ['version', '--output', 'table'], {})
+      await exec.exec("c8y", ['version', '--output', 'table'], {})
     }
 
     if (config.showTenant) {
-      await exec.exec(`"${binary}" sessions get -o json --select host,tenant,version`, [], {
+      await exec.exec(`c8y sessions get -o json --select host,tenant,version`, [], {
         ignoreReturnCode: true,
       })
     }

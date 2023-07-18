@@ -180,10 +180,10 @@ function run() {
             core.addPath(tool);
             if (config.showVersion) {
                 core.info(`showing version: binary=${binary}`);
-                yield exec.exec(`"${binary}"`, ['version', '--output', 'table'], {});
+                yield exec.exec("c8y", ['version', '--output', 'table'], {});
             }
             if (config.showTenant) {
-                yield exec.exec(`"${binary}" sessions get -o json --select host,tenant,version`, [], {
+                yield exec.exec(`c8y sessions get -o json --select host,tenant,version`, [], {
                     ignoreReturnCode: true,
                 });
             }
