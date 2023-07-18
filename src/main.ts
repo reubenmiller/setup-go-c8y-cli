@@ -27,7 +27,9 @@ async function run(): Promise<void> {
 
     if (config.showVersion) {
       core.debug(`showing version: binary=${binary}`)
-      await exec.exec('c8y', ['version', '--output', 'table'], {})
+      core.setOutput("C8Y_SETTINGS_DEFAULTS_OUTPUT", "table")
+      await exec.exec('c8y', ['version'], {})
+      // await exec.exec('c8y', ['version', '--output', 'table'], {})
     }
 
     if (config.showTenant) {
@@ -45,6 +47,7 @@ async function run(): Promise<void> {
       await exec.exec(config.command, [], {})
     }
     core.setOutput('c8y', binary)
+
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

@@ -180,7 +180,9 @@ function run() {
             core.addPath(tool);
             if (config.showVersion) {
                 core.debug(`showing version: binary=${binary}`);
-                yield exec.exec('c8y', ['version', '--output', 'table'], {});
+                core.setOutput("C8Y_SETTINGS_DEFAULTS_OUTPUT", "table");
+                yield exec.exec('c8y', ['version'], {});
+                // await exec.exec('c8y', ['version', '--output', 'table'], {})
             }
             if (config.showTenant) {
                 yield exec.exec(`c8y sessions get -o json --select host,tenant,version`, [], {
