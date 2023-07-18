@@ -3,6 +3,7 @@ import * as exec from '@actions/exec'
 import {getConfig} from './config'
 import {getTool} from './tool'
 import chmodr from 'chmodr'
+import path from 'path'
 
 
 async function run(): Promise<void> {
@@ -20,7 +21,7 @@ async function run(): Promise<void> {
     core.addPath(tool)
 
     if (config.showVersion) {
-      await exec.exec(tool, ['version'], {})
+      await exec.exec(path.join(tool, 'c8y'), ['version'], {})
     }
 
     if (config.command) {
