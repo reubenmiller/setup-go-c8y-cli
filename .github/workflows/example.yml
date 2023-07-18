@@ -1,0 +1,12 @@
+name: 'example'
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: reubenmiller/setup-go-c8y-cli@latest
+      - run: |
+          c8y version
