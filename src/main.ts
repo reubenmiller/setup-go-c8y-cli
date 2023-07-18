@@ -4,7 +4,7 @@ import {getConfig} from './config'
 import {getTool} from './tool'
 import chmodr from 'chmodr'
 import path from 'path'
-import { existsSync } from 'fs'
+import { existsSync, chmod } from 'fs'
 
 
 async function run(): Promise<void> {
@@ -18,11 +18,17 @@ async function run(): Promise<void> {
     }
 
     core.info(`making binary executable: ${binary}`)
-    chmodr(binary, 0o0755, err => {
+
+    chmod(binary, 0o0755, (err) => {
       if (err) {
         throw err
       }
     })
+    // chmodr(binary, 0o0755, err => {
+    //   if (err) {
+    //     throw err
+    //   }
+    // })
     core.info(`adding to path: ${tool}`)
     core.addPath(tool)
 
