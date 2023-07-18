@@ -5,7 +5,6 @@ import * as cp from 'child_process'
 import * as path from 'path'
 import {expect, test} from '@jest/globals'
 
-
 test('downloads and extracts tool with latest version', async () => {
   const path = await getTool()
 
@@ -18,7 +17,7 @@ test('downloads and extracts tool with latest version', async () => {
 
 test('downloads and extracts tool with explicit version', async () => {
   const config: Config = {
-    version: '2.35.0',
+    version: '2.35.0'
   }
 
   const path = await getTool(config)

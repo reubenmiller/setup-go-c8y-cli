@@ -1,28 +1,28 @@
 import * as core from '@actions/core'
 import * as tc from '@actions/tool-cache'
-import { Config } from './config'
-import { extract } from './extract'
-import { tmpdir } from 'os'
-import { lstatSync, existsSync } from 'fs'
+import {Config} from './config'
+import {extract} from './extract'
+import {tmpdir} from 'os'
+import {lstatSync, existsSync} from 'fs'
 import path from 'path'
 import 'cross-fetch/polyfill'
 
 const C8Y = 'c8y'
-
+const LATEST = 'latest'
 
 async function getLatestVersion(url: string): Promise<string> {
   try {
-    const response = await fetch(url, { method: 'GET', redirect: 'follow' })
+    const response = await fetch(url, {method: 'GET', redirect: 'follow'})
     return response.url.split('/').splice(-1)[0]
   } catch (err) {
-    console.info(err + " url: " + url);
+    core.error(`Failed to get latest version. url=${url}, error=${err}`)
   }
   return ''
 }
 
-const getDownloadUri = (version: string) => {
+const getDownloadUri = (version: string): string => {
   if (!version.startsWith('v')) {
-    version = 'v' + version
+    version = `v${version}`
   }
 
   let platformName = 'linux'
@@ -49,8 +49,7 @@ const getDownloadUri = (version: string) => {
 
   const binaryName = [C8Y, platformName, archName].join('_')
   return `https://github.com/reubenmiller/go-c8y-cli/releases/download/${version}/${binaryName}`
-};
-
+}
 
 export async function getTool(config: Config = {}): Promise<string> {
   process.env.RUNNER_TOOL_CACHE = process.env.RUNNER_TOOL_CACHE || tmpdir()
@@ -58,11 +57,13 @@ export async function getTool(config: Config = {}): Promise<string> {
 
   const binaryName = C8Y
   if (!config.version) {
-    config.version = 'latest'
+    config.version = LATEST
   }
 
-  if (config.version == 'latest') {
-    const latestVersion = await getLatestVersion('https://github.com/reubenmiller/go-c8y-cli/releases/latest')
+  if (config.version === LATEST) {
+    const latestVersion = await getLatestVersion(
+      'https://github.com/reubenmiller/go-c8y-cli/releases/latest'
+    )
     if (/^v?\d+\.\d+\.\d+.*$/i.test(latestVersion)) {
       config.version = latestVersion
     }
@@ -84,7 +85,7 @@ export async function getTool(config: Config = {}): Promise<string> {
     return outPath(cachedPath)
   }
 
-  core.info(`downloading tool from uri: ${config.uri}`)
+  core.info(`downloading go-c8y-cli: ${config.uri}`)
   const download = await tc.downloadTool(config.uri)
   const extractedPath = await extract(config.uri, download)
   core.debug(`extractedPath: ${extractedPath}`)

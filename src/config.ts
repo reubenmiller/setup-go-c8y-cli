@@ -10,7 +10,7 @@ export interface Config {
 }
 
 export function getConfig(): Config {
-  let version: string = core.getInput('version') || 'latest'
+  const version: string = core.getInput('version') || 'latest'
   const command: string = core.getInput('command') || ''
   const uri: string = core.getInput('uri') || ''
   const showVersion: boolean = core.getBooleanInput('showVersion')
@@ -21,7 +21,7 @@ export function getConfig(): Config {
     uri,
     command,
     showVersion,
-    showTenant,
+    showTenant
   }
   return config
 }

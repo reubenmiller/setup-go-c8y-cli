@@ -3,8 +3,7 @@ import * as exec from '@actions/exec'
 import {getConfig} from './config'
 import {getTool} from './tool'
 import path from 'path'
-import { existsSync, chmod } from 'fs'
-
+import {existsSync, chmod} from 'fs'
 
 async function run(): Promise<void> {
   try {
@@ -17,7 +16,7 @@ async function run(): Promise<void> {
     }
 
     core.debug(`making binary executable: ${binary}`)
-    chmod(binary, 0o0755, (err) => {
+    chmod(binary, 0o0755, err => {
       if (err) {
         throw err
       }
@@ -28,20 +27,24 @@ async function run(): Promise<void> {
 
     if (config.showVersion) {
       core.debug(`showing version: binary=${binary}`)
-      await exec.exec("c8y", ['version', '--output', 'table'], {})
+      await exec.exec('c8y', ['version', '--output', 'table'], {})
     }
 
     if (config.showTenant) {
-      await exec.exec(`c8y sessions get -o json --select host,tenant,version`, [], {
-        ignoreReturnCode: true,
-      })
+      await exec.exec(
+        `c8y sessions get -o json --select host,tenant,version`,
+        [],
+        {
+          ignoreReturnCode: true
+        }
+      )
     }
 
     if (config.command) {
       core.debug(`running command: ${config.command}`)
       await exec.exec(config.command, [], {})
     }
-    // core.setOutput('time', new Date().toTimeString())
+    core.setOutput('c8y', binary)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

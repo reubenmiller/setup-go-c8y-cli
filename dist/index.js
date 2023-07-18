@@ -33,7 +33,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getConfig = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 function getConfig() {
-    let version = core.getInput('version') || 'latest';
+    const version = core.getInput('version') || 'latest';
     const command = core.getInput('command') || '';
     const uri = core.getInput('uri') || '';
     const showVersion = core.getBooleanInput('showVersion');
@@ -43,7 +43,7 @@ function getConfig() {
         uri,
         command,
         showVersion,
-        showTenant,
+        showTenant
     };
     return config;
 }
@@ -171,7 +171,7 @@ function run() {
                 core.error(`binary does not exist. binary=${binary}`);
             }
             core.debug(`making binary executable: ${binary}`);
-            (0, fs_1.chmod)(binary, 0o0755, (err) => {
+            (0, fs_1.chmod)(binary, 0o0755, err => {
                 if (err) {
                     throw err;
                 }
@@ -180,18 +180,18 @@ function run() {
             core.addPath(tool);
             if (config.showVersion) {
                 core.debug(`showing version: binary=${binary}`);
-                yield exec.exec("c8y", ['version', '--output', 'table'], {});
+                yield exec.exec('c8y', ['version', '--output', 'table'], {});
             }
             if (config.showTenant) {
                 yield exec.exec(`c8y sessions get -o json --select host,tenant,version`, [], {
-                    ignoreReturnCode: true,
+                    ignoreReturnCode: true
                 });
             }
             if (config.command) {
                 core.debug(`running command: ${config.command}`);
                 yield exec.exec(config.command, [], {});
             }
-            // core.setOutput('time', new Date().toTimeString())
+            core.setOutput('c8y', binary);
         }
         catch (error) {
             if (error instanceof Error)
@@ -254,6 +254,7 @@ const fs_1 = __nccwpck_require__(7147);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 __nccwpck_require__(2137);
 const C8Y = 'c8y';
+const LATEST = 'latest';
 function getLatestVersion(url) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -261,14 +262,14 @@ function getLatestVersion(url) {
             return response.url.split('/').splice(-1)[0];
         }
         catch (err) {
-            console.info(err + " url: " + url);
+            core.error(`Failed to get latest version. url=${url}, error=${err}`);
         }
         return '';
     });
 }
 const getDownloadUri = (version) => {
     if (!version.startsWith('v')) {
-        version = 'v' + version;
+        version = `v${version}`;
     }
     let platformName = 'linux';
     if (['linux'].includes(process.platform)) {
@@ -305,9 +306,9 @@ function getTool(config = {}) {
         process.env.RUNNER_TEMP = process.env.RUNNER_TEMP || (0, os_1.tmpdir)();
         const binaryName = C8Y;
         if (!config.version) {
-            config.version = 'latest';
+            config.version = LATEST;
         }
-        if (config.version == 'latest') {
+        if (config.version === LATEST) {
             const latestVersion = yield getLatestVersion('https://github.com/reubenmiller/go-c8y-cli/releases/latest');
             if (/^v?\d+\.\d+\.\d+.*$/i.test(latestVersion)) {
                 config.version = latestVersion;
@@ -326,7 +327,7 @@ function getTool(config = {}) {
         if (cachedPath && (0, fs_1.existsSync)(path_1.default.join(cachedPath, C8Y))) {
             return outPath(cachedPath);
         }
-        core.info(`downloading tool from uri: ${config.uri}`);
+        core.info(`downloading go-c8y-cli: ${config.uri}`);
         const download = yield tc.downloadTool(config.uri);
         const extractedPath = yield (0, extract_1.extract)(config.uri, download);
         core.debug(`extractedPath: ${extractedPath}`);
