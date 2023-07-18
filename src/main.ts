@@ -2,7 +2,6 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import {getConfig} from './config'
 import {getTool} from './tool'
-import chmodr from 'chmodr'
 import path from 'path'
 import { existsSync, chmod } from 'fs'
 
@@ -14,27 +13,28 @@ async function run(): Promise<void> {
     const binary = path.join(tool, 'c8y')
 
     if (!existsSync(binary)) {
-      core.error(`Binary does not exist. binary=${binary}`)
+      core.error(`binary does not exist. binary=${binary}`)
     }
 
     core.info(`making binary executable: ${binary}`)
-
     chmod(binary, 0o0755, (err) => {
       if (err) {
         throw err
       }
     })
-    // chmodr(binary, 0o0755, err => {
-    //   if (err) {
-    //     throw err
-    //   }
-    // })
+
     core.info(`adding to path: ${tool}`)
     core.addPath(tool)
 
     if (config.showVersion) {
-      core.info(`Showing version: binary=${binary}`)
-      await exec.exec(`"${binary}"`, ['version'], {})
+      core.info(`showing version: binary=${binary}`)
+      await exec.exec(`"${binary}"`, ['version', '--output', 'table'], {})
+    }
+
+    if (config.showTenant) {
+      await exec.exec(`"${binary}" sessions get -o json --select host,tenant,version`, [], {
+        ignoreReturnCode: true,
+      })
     }
 
     if (config.command) {

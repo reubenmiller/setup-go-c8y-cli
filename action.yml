@@ -10,6 +10,10 @@ inputs:
     required: false
     description: Show cli version
     default: "true"
+  showTenant:
+    required: false
+    description: Show tenant information
+    default: "true"
 runs:
   using: 'node16'
   main: 'dist/index.js'

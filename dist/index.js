@@ -37,11 +37,13 @@ function getConfig() {
     const command = core.getInput('command') || '';
     const uri = core.getInput('uri') || '';
     const showVersion = core.getBooleanInput('showVersion');
+    const showTenant = core.getBooleanInput('showTenant');
     const config = {
         version,
         uri,
         command,
         showVersion,
+        showTenant,
     };
     return config;
 }
@@ -166,7 +168,7 @@ function run() {
             const tool = yield (0, tool_1.getTool)(config);
             const binary = path_1.default.join(tool, 'c8y');
             if (!(0, fs_1.existsSync)(binary)) {
-                core.error(`Binary does not exist. binary=${binary}`);
+                core.error(`binary does not exist. binary=${binary}`);
             }
             core.info(`making binary executable: ${binary}`);
             (0, fs_1.chmod)(binary, 0o0755, (err) => {
@@ -174,16 +176,16 @@ function run() {
                     throw err;
                 }
             });
-            // chmodr(binary, 0o0755, err => {
-            //   if (err) {
-            //     throw err
-            //   }
-            // })
             core.info(`adding to path: ${tool}`);
             core.addPath(tool);
             if (config.showVersion) {
-                core.info(`Showing version: binary=${binary}`);
-                yield exec.exec(`"${binary}"`, ['version'], {});
+                core.info(`showing version: binary=${binary}`);
+                yield exec.exec(`"${binary}"`, ['version', '--output', 'table'], {});
+            }
+            if (config.showTenant) {
+                yield exec.exec(`"${binary}" sessions get -o json --select host,tenant,version`, [], {
+                    ignoreReturnCode: true,
+                });
             }
             if (config.command) {
                 core.info(`running command: ${config.command}`);
