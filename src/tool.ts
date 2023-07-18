@@ -87,7 +87,7 @@ export async function getTool(config: Config = {}): Promise<string> {
   core.info(`downloading tool from uri: ${config.uri}`)
   const download = await tc.downloadTool(config.uri)
   const extractedPath = await extract(config.uri, download)
-  core.info(extractedPath)
+  core.debug(`extractedPath: ${extractedPath}`)
 
   if (lstatSync(extractedPath).isDirectory()) {
     const p = await tc.cacheDir(extractedPath, binaryName, config.version)

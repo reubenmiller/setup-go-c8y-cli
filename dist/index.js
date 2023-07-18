@@ -170,16 +170,16 @@ function run() {
             if (!(0, fs_1.existsSync)(binary)) {
                 core.error(`binary does not exist. binary=${binary}`);
             }
-            core.info(`making binary executable: ${binary}`);
+            core.debug(`making binary executable: ${binary}`);
             (0, fs_1.chmod)(binary, 0o0755, (err) => {
                 if (err) {
                     throw err;
                 }
             });
-            core.info(`adding to path: ${tool}`);
+            core.debug(`adding to path: ${tool}`);
             core.addPath(tool);
             if (config.showVersion) {
-                core.info(`showing version: binary=${binary}`);
+                core.debug(`showing version: binary=${binary}`);
                 yield exec.exec("c8y", ['version', '--output', 'table'], {});
             }
             if (config.showTenant) {
@@ -188,7 +188,7 @@ function run() {
                 });
             }
             if (config.command) {
-                core.info(`running command: ${config.command}`);
+                core.debug(`running command: ${config.command}`);
                 yield exec.exec(config.command, [], {});
             }
             // core.setOutput('time', new Date().toTimeString())
@@ -329,7 +329,7 @@ function getTool(config = {}) {
         core.info(`downloading tool from uri: ${config.uri}`);
         const download = yield tc.downloadTool(config.uri);
         const extractedPath = yield (0, extract_1.extract)(config.uri, download);
-        core.info(extractedPath);
+        core.debug(`extractedPath: ${extractedPath}`);
         if ((0, fs_1.lstatSync)(extractedPath).isDirectory()) {
             const p = yield tc.cacheDir(extractedPath, binaryName, config.version);
             return outPath(p);

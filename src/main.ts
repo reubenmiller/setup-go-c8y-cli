@@ -16,18 +16,18 @@ async function run(): Promise<void> {
       core.error(`binary does not exist. binary=${binary}`)
     }
 
-    core.info(`making binary executable: ${binary}`)
+    core.debug(`making binary executable: ${binary}`)
     chmod(binary, 0o0755, (err) => {
       if (err) {
         throw err
       }
     })
 
-    core.info(`adding to path: ${tool}`)
+    core.debug(`adding to path: ${tool}`)
     core.addPath(tool)
 
     if (config.showVersion) {
-      core.info(`showing version: binary=${binary}`)
+      core.debug(`showing version: binary=${binary}`)
       await exec.exec("c8y", ['version', '--output', 'table'], {})
     }
 
@@ -38,7 +38,7 @@ async function run(): Promise<void> {
     }
 
     if (config.command) {
-      core.info(`running command: ${config.command}`)
+      core.debug(`running command: ${config.command}`)
       await exec.exec(config.command, [], {})
     }
     // core.setOutput('time', new Date().toTimeString())
