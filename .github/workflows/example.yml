@@ -7,6 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: reubenmiller/setup-go-c8y-cli@latest
+      - uses: reubenmiller/setup-go-c8y-cli
       - run: |
           c8y version
