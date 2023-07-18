@@ -164,8 +164,9 @@ function run() {
         try {
             const config = (0, config_1.getConfig)();
             const tool = yield (0, tool_1.getTool)(config);
-            core.info(`making binary executable: ${tool}`);
-            (0, chmodr_1.default)(tool, 0o0755, err => {
+            const binary = path_1.default.join(tool, 'c8y');
+            core.info(`making binary executable: ${binary}`);
+            (0, chmodr_1.default)(binary, 0o0755, err => {
                 if (err) {
                     throw err;
                 }
@@ -173,7 +174,8 @@ function run() {
             core.info(`adding to path: ${tool}`);
             core.addPath(tool);
             if (config.showVersion) {
-                yield exec.exec(path_1.default.join(tool, 'c8y'), ['version'], {});
+                core.info(`Showing version: binary=${binary}`);
+                yield exec.exec(binary, ['version'], {});
             }
             if (config.command) {
                 core.info(`running command: ${config.command}`);

@@ -10,9 +10,10 @@ async function run(): Promise<void> {
   try {
     const config = getConfig()
     const tool = await getTool(config)
+    const binary = path.join(tool, 'c8y')
 
-    core.info(`making binary executable: ${tool}`)
-    chmodr(tool, 0o0755, err => {
+    core.info(`making binary executable: ${binary}`)
+    chmodr(binary, 0o0755, err => {
       if (err) {
         throw err
       }
@@ -21,7 +22,8 @@ async function run(): Promise<void> {
     core.addPath(tool)
 
     if (config.showVersion) {
-      await exec.exec(path.join(tool, 'c8y'), ['version'], {})
+      core.info(`Showing version: binary=${binary}`)
+      await exec.exec(binary, ['version'], {})
     }
 
     if (config.command) {
