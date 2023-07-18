@@ -1,4 +1,4 @@
-# setup-bin
+# setup-go-c8y-cli
 
 [![Actions Status](https://github.com/reubenmiller/setup-go-c8y-cli/workflows/build-test/badge.svg)](https://github.com/reubenmiller/setup-go-c8y-cli/actions)
 
