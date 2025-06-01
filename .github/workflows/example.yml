@@ -1,12 +1,36 @@
-name: 'example'
+name: example
 on:
   workflow_dispatch:
 
+env:
+  C8Y_HOST: '${{ secrets.C8Y_HOST }}'
+  C8Y_USER: '${{ secrets.C8Y_USER }}'
+  C8Y_PASSWORD: '${{ secrets.C8Y_PASSWORD }}'
+
 jobs:
-  deploy:
+  job1:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: reubenmiller/setup-go-c8y-cli@feat-stdin-redirect
+
+        - name: No stdin check
+          run: |
+            c8y devices list -n
+
+        - name: Stdin check
+          run: |
+            timeout 5 c8y devices list
+
+  job2:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: reubenmiller/setup-go-c8y-cli@main
-      - run: |
-          c8y version
+
+      - name: No stdin check
+        run: |
+          c8y devices list -n
+      - name: Stdin check
+        run: |
+          timeout 5 c8y devices list
