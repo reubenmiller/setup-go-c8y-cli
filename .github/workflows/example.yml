@@ -22,7 +22,7 @@ jobs:
             cache: false
 
         - run: |
-            go install github.com/reubenmiller/go-c8y-cli/v2/cmd/c8y@73a143ad58dd7b2d5c70fcbf272f33d486ddf5bf
+            go install github.com/reubenmiller/go-c8y-cli/v2/cmd/c8y@d41972054e6b8a3079bb36172f93e920083882b3
 
         - name: No stdin check
           run: |
@@ -54,7 +54,7 @@ jobs:
             cache: false
 
         - run: |
-            go install github.com/reubenmiller/go-c8y-cli/v2/cmd/c8y@73a143ad58dd7b2d5c70fcbf272f33d486ddf5bf
+            go install github.com/reubenmiller/go-c8y-cli/v2/cmd/c8y@d41972054e6b8a3079bb36172f93e920083882b3
 
         - name: No stdin check
           run: |
@@ -86,7 +86,7 @@ jobs:
             cache: false
 
         - run: |
-            go install github.com/reubenmiller/go-c8y-cli/v2/cmd/c8y@73a143ad58dd7b2d5c70fcbf272f33d486ddf5bf
+            go install github.com/reubenmiller/go-c8y-cli/v2/cmd/c8y@d41972054e6b8a3079bb36172f93e920083882b3
 
         - name: No stdin check
           run: |
