@@ -14,7 +14,6 @@ jobs:
       timeout-minutes: 5
       steps:
         - uses: actions/checkout@v4
-        - uses: reubenmiller/setup-go-c8y-cli@main
 
         - name: Set up Go 1.x
           uses: actions/setup-go@v5
