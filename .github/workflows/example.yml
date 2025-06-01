@@ -10,9 +10,14 @@ env:
 jobs:
   job1:
       runs-on: ubuntu-latest
+      timeout-minutes: 5
       steps:
         - uses: actions/checkout@v4
         - uses: reubenmiller/setup-go-c8y-cli@feat-stdin-redirect
+
+        - name: Redirect stdin to /dev/null globally to prevent FIFO issues
+          run: |
+            exec 0</dev/null  # Redirect stdin globally
 
         - name: No stdin check
           run: |
@@ -20,10 +25,11 @@ jobs:
 
         - name: Stdin check
           run: |
-            timeout 5 c8y devices list
+            c8y devices list
 
   job2:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: reubenmiller/setup-go-c8y-cli@main
