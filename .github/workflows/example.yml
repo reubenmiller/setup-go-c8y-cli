@@ -8,9 +8,54 @@ env:
   C8Y_PASSWORD: '${{ secrets.C8Y_PASSWORD }}'
 
 jobs:
-  job0:
-      name: job0 (new c8y version)
+  job0-0:
+      name: job0-ubuntu (new c8y version)
       runs-on: ubuntu-latest
+      timeout-minutes: 5
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Set up Go 1.x
+          uses: actions/setup-go@v5
+          with:
+            go-version: "1.24"
+
+        - run: |
+            go install github.com/reubenmiller/go-c8y-cli/v2/cmd/c8y@fix-improve-stdin-detection
+
+        - name: No stdin check
+          run: |
+            c8y devices list -n
+
+        - name: Stdin check
+          run: |
+            c8y devices list
+
+  job0-1:
+      name: job0-windows (new c8y version)
+      runs-on: windows-latest
+      timeout-minutes: 5
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Set up Go 1.x
+          uses: actions/setup-go@v5
+          with:
+            go-version: "1.24"
+
+        - run: |
+            go install github.com/reubenmiller/go-c8y-cli/v2/cmd/c8y@fix-improve-stdin-detection
+
+        - name: No stdin check
+          run: |
+            c8y devices list -n
+
+        - name: Stdin check
+          run: |
+            c8y devices list
+  job0-2:
+      name: job0-macos (new c8y version)
+      runs-on: macos-latest
       timeout-minutes: 5
       steps:
         - uses: actions/checkout@v4
