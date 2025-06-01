@@ -48,10 +48,12 @@ function getConfig() {
     const uri = core.getInput('uri') || '';
     const showVersion = core.getBooleanInput('showVersion');
     const showTenant = core.getBooleanInput('showTenant');
+    const preserveStdin = core.getBooleanInput('preserveStdin');
     const config = {
         version,
         uri,
         command,
+        preserveStdin,
         showVersion,
         showTenant
     };
@@ -195,6 +197,10 @@ function run() {
             const config = (0, config_1.getConfig)();
             const tool = yield (0, tool_1.getTool)(config);
             const binary = path_1.default.join(tool, 'c8y');
+            if (!config.preserveStdin) {
+                core.debug(`Redirect stdin to /dev/null globally to prevent FIFO issues, see https://github.com/actions/runner-images/issues/10959`);
+                yield exec.exec('bash', ['-c', 'exec 0</dev/null'], {});
+            }
             if (!(0, fs_1.existsSync)(binary)) {
                 core.error(`binary does not exist. binary=${binary}`);
             }

@@ -12,7 +12,9 @@ async function run(): Promise<void> {
     const binary = path.join(tool, 'c8y')
 
     if (!config.preserveStdin) {
-      core.debug(`Redirect stdin to /dev/null globally to prevent FIFO issues, see https://github.com/actions/runner-images/issues/10959`)
+      core.debug(
+        `Redirect stdin to /dev/null globally to prevent FIFO issues, see https://github.com/actions/runner-images/issues/10959`
+      )
       await exec.exec('bash', ['-c', 'exec 0</dev/null'], {})
     }
 
