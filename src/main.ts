@@ -11,6 +11,11 @@ async function run(): Promise<void> {
     const tool = await getTool(config)
     const binary = path.join(tool, 'c8y')
 
+    if (!config.preserveStdin) {
+      core.debug(`Redirect stdin to /dev/null globally to prevent FIFO issues, see https://github.com/actions/runner-images/issues/10959`)
+      await exec.exec('bash', ['-c', 'exec 0</dev/null'], {})
+    }
+
     if (!existsSync(binary)) {
       core.error(`binary does not exist. binary=${binary}`)
     }

@@ -7,6 +7,7 @@ export interface Config {
   subPath?: string
   showVersion?: boolean
   showTenant?: boolean
+  preserveStdin?: boolean
 }
 
 export function getConfig(): Config {
@@ -15,11 +16,13 @@ export function getConfig(): Config {
   const uri: string = core.getInput('uri') || ''
   const showVersion: boolean = core.getBooleanInput('showVersion')
   const showTenant: boolean = core.getBooleanInput('showTenant')
+  const preserveStdin: boolean = core.getBooleanInput('preserveStdin')
 
   const config = {
     version,
     uri,
     command,
+    preserveStdin,
     showVersion,
     showTenant
   }
