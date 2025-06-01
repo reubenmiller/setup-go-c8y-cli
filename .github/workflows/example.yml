@@ -27,9 +27,17 @@ jobs:
           run: |
             c8y devices list -n
 
+        - name: Stdin check (redirect dev null)
+          run: |
+            c8y devices list </dev/null
+
         - name: Stdin check
           run: |
             c8y devices list
+        
+        - name: Stdin check (piped input)
+          run: |
+            c8y devices list -p 1 -n | c8y devices get >/dev/null
 
   job0-1:
       name: job0-windows (new c8y version)
@@ -50,9 +58,17 @@ jobs:
           run: |
             c8y devices list -n
 
+        - name: Stdin check (redirect dev null)
+          run: |
+            c8y devices list </dev/null
+
         - name: Stdin check
           run: |
             c8y devices list
+
+        - name: Stdin check (piped input)
+          run: |
+            c8y devices list -p 1 -n | c8y devices get >/dev/null
   job0-2:
       name: job0-macos (new c8y version)
       runs-on: macos-latest
@@ -72,9 +88,18 @@ jobs:
           run: |
             c8y devices list -n
 
+        - name: Stdin check (redirect dev null)
+          run: |
+            c8y devices list </dev/null
+
         - name: Stdin check
           run: |
+            c8y devices list </dev/null
             c8y devices list
+
+        - name: Stdin check (piped input)
+          run: |
+            c8y devices list -p 1 -n | c8y devices get >/dev/null
 
   job1:
       name: job1 (redirect stdin)
