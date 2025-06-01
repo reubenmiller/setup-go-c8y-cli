@@ -60,9 +60,10 @@ jobs:
           run: |
             c8y devices list -n
 
-        - name: Stdin check (redirect dev null)
-          run: |
-            c8y devices list </dev/null
+        # skip as windows does not support this syntax
+        # - name: Stdin check (redirect dev null)
+        #   run: |
+        #     c8y devices list </dev/null
 
         - name: Stdin check
           run: |
