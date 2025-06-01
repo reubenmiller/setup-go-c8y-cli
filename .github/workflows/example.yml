@@ -15,16 +15,13 @@ jobs:
         - uses: actions/checkout@v4
         - uses: reubenmiller/setup-go-c8y-cli@feat-stdin-redirect
 
-        - name: Redirect stdin to /dev/null globally to prevent FIFO issues
-          run: |
-            exec 0</dev/null  # Redirect stdin globally
-
         - name: No stdin check
           run: |
             c8y devices list -n
 
         - name: Stdin check
           run: |
+            exec 0</dev/null  # Redirect stdin globally
             c8y devices list
 
   job2:
