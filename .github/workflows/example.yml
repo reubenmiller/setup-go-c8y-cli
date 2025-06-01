@@ -19,6 +19,7 @@ jobs:
           uses: actions/setup-go@v5
           with:
             go-version: "1.24"
+            cache: false
 
         - run: |
             go install github.com/reubenmiller/go-c8y-cli/v2/cmd/c8y@fix-improve-stdin-detection
@@ -50,6 +51,7 @@ jobs:
           uses: actions/setup-go@v5
           with:
             go-version: "1.24"
+            cache: false
 
         - run: |
             go install github.com/reubenmiller/go-c8y-cli/v2/cmd/c8y@fix-improve-stdin-detection
@@ -80,6 +82,7 @@ jobs:
           uses: actions/setup-go@v5
           with:
             go-version: "1.24"
+            cache: false
 
         - run: |
             go install github.com/reubenmiller/go-c8y-cli/v2/cmd/c8y@fix-improve-stdin-detection
