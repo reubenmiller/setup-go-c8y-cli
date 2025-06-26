@@ -13,6 +13,8 @@ steps:
   - uses: actions/checkout@v4
   - uses: reubenmiller/setup-go-c8y-cli@main
   - run: |
+      exec 0</dev/null  # Redirect stdin globally to avoid stdin detection issues in go-c8y-cli
+
       c8y microservices create --file myfile.zip
 ```
 
@@ -31,5 +33,7 @@ steps:
       showVersion: false
       showTenant: false
   - run: |
+      exec 0</dev/null  # Redirect stdin globally to avoid stdin detection issues in go-c8y-cli
+
       c8y microservices create --file myfile.zip
 ```
