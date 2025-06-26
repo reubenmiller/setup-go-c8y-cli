@@ -13,7 +13,7 @@ steps:
   - uses: actions/checkout@v3
   - uses: reubenmiller/setup-go-c8y-cli@main
   - run: |
-      c8y microservice create --file myfile.zip
+      c8y microservices create --file myfile.zip
 ```
 
 You can customize some of the go-c8y-cli setup options:
@@ -31,5 +31,5 @@ steps:
       showVersion: false
       showTenant: false
   - run: |
-      c8y microservice create --file myfile.zip
+      c8y microservices create --file myfile.zip
 ```
