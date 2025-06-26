@@ -27,7 +27,7 @@ steps:
   - uses: actions/checkout@v4
   - uses: reubenmiller/setup-go-c8y-cli@main
     with:
-      version: '2.36.0'
+      version: '2.52.1'
       showVersion: false
       showTenant: false
   - run: |
