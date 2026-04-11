@@ -14,6 +14,63 @@ inputs:
     required: false
     description: Show tenant information
     default: "true"
+outputs:
+  c8y:
+    description: Path to the c8y binary
+    value: ${{ steps.install.outputs.c8y }}
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: composite
+  steps:
+    - name: Resolve version
+      id: resolve
+      shell: bash
+      run: |
+        version="${{ inputs.version }}"
+        if [ "$version" = "latest" ]; then
+          version=$(curl -sSfI https://github.com/reubenmiller/go-c8y-cli/releases/latest \
+            | grep -i '^location:' | awk -F/ '{print $NF}' | tr -d '\r\n')
+        fi
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+
+    - name: Cache c8y binary
+      uses: actions/cache@v5
+      with:
+        path: ~/.c8y
+        key: c8y-${{ steps.resolve.outputs.version }}-${{ runner.os }}-${{ runner.arch }}
+
+    - name: Install c8y
+      id: install
+      shell: bash
+      env:
+        VERSION: ${{ steps.resolve.outputs.version }}
+      run: |
+        case "${{ runner.os }}" in
+          Linux)   os=linux   ;;
+          macOS)   os=macOS   ;;
+          Windows) os=windows ; ext=.exe ;;
+        esac
+        case "${{ runner.arch }}" in
+          X64)   arch=amd64 ;;
+          ARM64) arch=arm64 ;;
+          ARM)   arch=armv7 ;;
+        esac
+        dir="${HOME}/.c8y/${VERSION}"
+        binary="${dir}/c8y${ext:-}"
+        if [ ! -f "$binary" ]; then
+          mkdir -p "$dir"
+          url="https://github.com/reubenmiller/go-c8y-cli/releases/download/${VERSION}/c8y_${os}_${arch}${ext:-}"
+          curl -sSfL "$url" -o "$binary"
+          chmod +x "$binary"
+        fi
+        echo "${dir}" >> "$GITHUB_PATH"
+        echo "c8y=${binary}" >> "$GITHUB_OUTPUT"
+
+    - name: Show version
+      if: ${{ inputs.showVersion == 'true' }}
+      shell: bash
+      run: c8y version --output table
+
+    - name: Show tenant
+      if: ${{ inputs.showTenant == 'true' }}
+      shell: bash
+      run: c8y sessions get -o json --select host,tenant,version || true

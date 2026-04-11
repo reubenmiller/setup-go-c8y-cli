@@ -1,5 +1,5 @@
-name: 'build-test'
-on: # rebuild any PRs and main branch changes
+name: 'test'
+on:
   workflow_dispatch:
   pull_request:
   push:
@@ -8,24 +8,37 @@ on: # rebuild any PRs and main branch changes
       - 'releases/*'
 
 jobs:
-  build: # make sure build/ci work properly
-    runs-on: ubuntu-latest
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        version: [latest, v2.39.0]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/checkout@v6
+
+      - name: Install (version=${{ matrix.version }})
+        uses: ./
         with:
-          node-version-file: .node-version
-          cache: npm
-      - run: |
-          npm ci
-      - run: |
-          npm run all
-  test: # make sure the action works on a clean machine without building
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: ./
-      - run: |
-          which c8y
-          c8y version
+          version: ${{ matrix.version }}
+          showVersion: 'true'
+          showTenant: 'false'
+
+      - name: Binary is on PATH
+        shell: bash
+        run: which c8y || command -v c8y
+
+      - name: Version output is non-empty
+        shell: bash
+        run: |
+          out=$(c8y version --output table)
+          echo "$out"
+          [ -n "$out" ]
+
+      - name: Cache hit on second install
+        uses: ./
+        with:
+          version: ${{ matrix.version }}
+          showVersion: 'false'
+          showTenant: 'false'
