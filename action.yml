@@ -30,6 +30,11 @@ runs:
           version=$(curl -sSfI https://github.com/reubenmiller/go-c8y-cli/releases/latest \
             | grep -i '^location:' | awk -F/ '{print $NF}' | tr -d '\r\n')
         fi
+        # Normalize: ensure version always has a v prefix
+        case "$version" in
+          v*) ;;
+          *)  version="v${version}" ;;
+        esac
         echo "version=$version" >> "$GITHUB_OUTPUT"
 
     - name: Cache c8y binary
