@@ -12,8 +12,8 @@ env:
   C8Y_USER: '${{ secrets.C8Y_USER }}'
   C8Y_PASSWORD: '${{ secrets.C8Y_PASSWORD }}'
 steps:
-  - uses: actions/checkout@v4
-  - uses: reubenmiller/setup-go-c8y-cli@v2
+  - uses: actions/checkout@v6
+  - uses: reubenmiller/setup-go-c8y-cli@main
   - run: |
       exec 0</dev/null  # Redirect stdin globally to avoid stdin detection issues in go-c8y-cli
 
@@ -40,8 +40,8 @@ steps:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
-  - uses: reubenmiller/setup-go-c8y-cli@v2
+  - uses: actions/checkout@v6
+  - uses: reubenmiller/setup-go-c8y-cli@main
     with:
       version: 'v2.52.1'
       showVersion: false
