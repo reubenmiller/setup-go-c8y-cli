@@ -14,6 +14,17 @@ inputs:
     required: false
     description: Show tenant information
     default: "true"
+  extensions:
+    required: false
+    description: |
+      go-c8y-cli extensions to install, one per line (or separated by commas or spaces).
+      Each entry is a repository (owner/repo or a URL), optionally followed by @<release tag or commit ref>,
+      e.g. reubenmiller/c8y-tenant-sync@v0.10.5. Without a ref, the latest release is installed.
+    default: ""
+  token:
+    required: false
+    description: GitHub token used when installing extensions, to avoid GitHub API rate limits
+    default: ${{ github.token }}
 outputs:
   c8y:
     description: Path to the c8y binary
@@ -69,6 +80,70 @@ runs:
         fi
         echo "${dir}" >> "$GITHUB_PATH"
         echo "c8y=${binary}" >> "$GITHUB_OUTPUT"
+
+    - name: Install extensions
+      if: ${{ inputs.extensions != '' }}
+      shell: bash
+      env:
+        C8Y_BIN: ${{ steps.install.outputs.c8y }}
+        EXTENSIONS: ${{ inputs.extensions }}
+        GH_TOKEN: ${{ inputs.token }}
+        # Fail instead of prompting for credentials when a repository can't be cloned
+        GIT_TERMINAL_PROMPT: "0"
+      run: |
+        set -euo pipefail
+        # c8y is not on PATH until the next step, so call it by its full path.
+        # stdin is closed so that c8y does not wait for piped input.
+        c8y() { "$C8Y_BIN" "$@" </dev/null; }
+
+        # Entries are separated by new lines, commas or spaces; "#" starts a comment
+        entries=$(printf '%s\n' "$EXTENSIONS" | sed 's/#.*//' | tr ', \t' '\n\n\n' | sed '/^$/d')
+
+        for entry in $entries; do
+          # Split off the ref after the last "@", unless the "@" is part of the
+          # repository address (e.g. git@github.com:owner/repo)
+          repo="$entry"
+          ref=""
+          case "$entry" in
+            *@*)
+              if [[ "${entry%@*}" == */* ]]; then
+                repo="${entry%@*}"
+                ref="${entry##*@}"
+              fi
+              ;;
+          esac
+
+          # Extensions from github.com are listed as owner/repo
+          key="${repo#https://github.com/}"
+          key="${key#http://github.com/}"
+          key="${key%/}"
+          key="${key%.git}"
+
+          echo "::group::Install extension ${repo}${ref:+ (${ref})}"
+          # The list command fails (and logs an error) when no extensions are installed
+          installed=$(c8y extensions list --filter "repo eq ${key}" --select name,version -o csv 2>/dev/null || true)
+          if [ -n "$installed" ]; then
+            name="${installed%%,*}"
+            version="${installed#*,}"
+            if [ -n "$ref" ] && [ "$version" = "$ref" ]; then
+              echo "Extension ${name} ${version} is already installed"
+              echo "::endgroup::"
+              continue
+            fi
+            # Installing over an existing extension fails, so replace it
+            echo "Replacing installed extension ${name} ${version}"
+            c8y extensions delete "$name"
+          fi
+
+          args=(extensions install "$repo")
+          if [ -n "$ref" ]; then
+            args+=(--pin "$ref")
+          fi
+          c8y "${args[@]}"
+          echo "::endgroup::"
+        done
+
+        c8y extensions list --select name,version,repo -o table
 
     - name: Show version
       if: ${{ inputs.showVersion == 'true' }}

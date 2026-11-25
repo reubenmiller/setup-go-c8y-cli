@@ -43,3 +43,41 @@ jobs:
           version: ${{ matrix.version }}
           showVersion: 'false'
           showTenant: 'false'
+
+      # Binary extensions need go-c8y-cli v2.57.0 or later
+      - name: Install extension (pinned)
+        if: ${{ matrix.version == 'latest' }}
+        uses: ./
+        with:
+          version: ${{ matrix.version }}
+          showVersion: 'false'
+          showTenant: 'false'
+          extensions: |
+            # comments and blank lines are ignored
+            reubenmiller/c8y-tenant-sync@v0.10.5
+
+      - name: Extension command runs
+        if: ${{ matrix.version == 'latest' }}
+        shell: bash
+        run: |
+          out=$(c8y tenant-sync --version </dev/null)
+          echo "$out"
+          [[ "$out" == *0.10.5* ]]
+
+      - name: Install extension again (already installed)
+        if: ${{ matrix.version == 'latest' }}
+        uses: ./
+        with:
+          version: ${{ matrix.version }}
+          showVersion: 'false'
+          showTenant: 'false'
+          extensions: reubenmiller/c8y-tenant-sync@v0.10.5
+
+      - name: Replace extension with the latest release
+        if: ${{ matrix.version == 'latest' }}
+        uses: ./
+        with:
+          version: ${{ matrix.version }}
+          showVersion: 'false'
+          showTenant: 'false'
+          extensions: https://github.com/reubenmiller/c8y-tenant-sync
