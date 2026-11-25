@@ -38,7 +38,7 @@ runs:
         echo "version=$version" >> "$GITHUB_OUTPUT"
 
     - name: Cache c8y binary
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: ~/.c8y
         key: c8y-${{ steps.resolve.outputs.version }}-${{ runner.os }}-${{ runner.arch }}
