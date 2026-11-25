@@ -66,7 +66,7 @@ steps:
       showTenant: false
       extensions: |
         reubenmiller/c8y-tenant-sync@v0.10.5
-  - run: c8y tenant-sync validate -f tenant.yaml </dev/null
+  - run: c8y tenant-sync validate -f tenant.yaml
 ```
 
 Notes:
